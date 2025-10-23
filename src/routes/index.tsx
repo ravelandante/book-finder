@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
 import type { BookListResponse } from '../types/book.ts';
+import { BookListResponseSchema } from '../types/book.ts';
 
 const apiKey = import.meta.env.VITE_API_KEY;
 
@@ -26,8 +27,12 @@ function App() {
 
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
-    const books = await searchBooks(formData.bookName);
-    setBookList(books);
+    const books = BookListResponseSchema.safeParse(
+      await searchBooks(formData.bookName),
+    );
+    if (books.success) {
+      setBookList(books.data);
+    }
   };
 
   return (

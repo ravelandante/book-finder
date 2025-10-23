@@ -1,24 +1,28 @@
-interface Author {
-  id: number;
-  name: string;
-}
+import { z } from 'zod';
 
-interface Rating {
-  average: number;
-}
+const AuthorSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
 
-interface Book {
-  id: number;
-  title: string;
-  subtitle?: string;
-  image: string;
-  authors: Author[];
-  rating: Rating;
-}
+const RatingSchema = z.object({
+  average: z.number(),
+});
 
-export interface BookListResponse {
-  available: number;
-  number: number;
-  offset: number;
-  books: Book[][];
-}
+const BookSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  subtitle: z.string().optional(),
+  image: z.string(),
+  authors: z.array(AuthorSchema),
+  rating: RatingSchema,
+});
+
+export const BookListResponseSchema = z.object({
+  available: z.number(),
+  number: z.number(),
+  offset: z.number(),
+  books: z.array(z.array(BookSchema)),
+});
+
+export type BookListResponse = z.infer<typeof BookListResponseSchema>;
