@@ -142,6 +142,42 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
+  transition: opacity 0.3s ease;
+}
+
+.book-image.loading {
+  opacity: 0;
+}
+
+.image-skeleton {
+  width: 120px;
+  height: 160px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-skeleton::after {
+  content: '📖';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .book-info {
