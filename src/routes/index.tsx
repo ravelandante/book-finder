@@ -1,9 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import dotenv from 'dotenv';
 import { useForm } from 'react-hook-form';
 
-dotenv.config();
-const apiKey = process.env.API_KEY;
+const apiKey = import.meta.env.VITE_API_KEY;
 
 export const Route = createFileRoute('/')({
   component: App,
