@@ -2,6 +2,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { BookListResponseSchema } from '../types/book.ts';
+import {
+  BookModel,
+  favouriteBooksStore,
+} from '../stores/favouriteBooksStore.ts';
 import type { SubmitHandler } from 'react-hook-form';
 import type { BookListResponse } from '../types/book.ts';
 
@@ -51,6 +55,21 @@ function App() {
                 Authors: {book.authors.map((author) => author.name).join(', ')}
               </p>
               <p>Average Rating: {book.rating.average}</p>
+              <button
+                onClick={() => {
+                  if (favouriteBooksStore.isFavouriteBook(book.id)) {
+                    favouriteBooksStore.removeBook(book.id);
+                  } else {
+                    const bookInstance = BookModel.create({
+                      ...book,
+                      subtitle: book.subtitle || '',
+                    });
+                    favouriteBooksStore.addBook(bookInstance);
+                  }
+                }}
+              >
+                {favouriteBooksStore.isFavouriteBook(book.id) ? '★' : '☆'}
+              </button>
               <img src={book.image} alt={book.title} />
             </li>
           ))}
