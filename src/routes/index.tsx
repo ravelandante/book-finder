@@ -1,19 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { BookListResponseSchema } from '../types/book.ts';
 import {
   BookModel,
   favouriteBooksStore,
 } from '../stores/favouriteBooksStore.ts';
 import type { SubmitHandler } from 'react-hook-form';
-import type { BookListResponse } from '../types/book.ts';
+import type { Book, BookListResponse } from '../types/book.ts';
 
 const apiKey = import.meta.env.VITE_API_KEY;
-
-export const Route = createFileRoute('/')({
-  component: App,
-});
 
 type Inputs = {
   bookName: string;
@@ -26,7 +23,29 @@ const searchBooks = async (bookName: string) => {
   return response.json();
 };
 
-function App() {
+const FavoriteButton = observer(function FavoriteButton({
+  book,
+}: {
+  book: Book;
+}) {
+  const isFavorite = favouriteBooksStore.isFavouriteBook(book.id);
+
+  const handleToggle = () => {
+    if (isFavorite) {
+      favouriteBooksStore.removeBook(book.id);
+    } else {
+      const bookInstance = BookModel.create({
+        ...book,
+        subtitle: book.subtitle || '',
+      });
+      favouriteBooksStore.addBook(bookInstance);
+    }
+  };
+
+  return <button onClick={handleToggle}>{isFavorite ? '★' : '☆'}</button>;
+});
+
+const App = observer(function App() {
   const [bookList, setBookList] = useState<BookListResponse | null>(null);
 
   const { register, handleSubmit } = useForm<Inputs>();
@@ -44,7 +63,6 @@ function App() {
       <input {...register('bookName', { required: true })} />
 
       <input type="submit" />
-
       {bookList && (
         <ul>
           {bookList.books.flat().map((book) => (
@@ -55,21 +73,7 @@ function App() {
                 Authors: {book.authors.map((author) => author.name).join(', ')}
               </p>
               <p>Average Rating: {book.rating.average}</p>
-              <button
-                onClick={() => {
-                  if (favouriteBooksStore.isFavouriteBook(book.id)) {
-                    favouriteBooksStore.removeBook(book.id);
-                  } else {
-                    const bookInstance = BookModel.create({
-                      ...book,
-                      subtitle: book.subtitle || '',
-                    });
-                    favouriteBooksStore.addBook(bookInstance);
-                  }
-                }}
-              >
-                {favouriteBooksStore.isFavouriteBook(book.id) ? '★' : '☆'}
-              </button>
+              <FavoriteButton book={book} />
               <img src={book.image} alt={book.title} />
             </li>
           ))}
@@ -77,4 +81,8 @@ function App() {
       )}
     </form>
   );
-}
+});
+
+export const Route = createFileRoute('/')({
+  component: App,
+});

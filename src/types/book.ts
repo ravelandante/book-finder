@@ -26,3 +26,4 @@ export const BookListResponseSchema = z.object({
 });
 
 export type BookListResponse = z.infer<typeof BookListResponseSchema>;
+export type Book = z.infer<typeof BookSchema>;
