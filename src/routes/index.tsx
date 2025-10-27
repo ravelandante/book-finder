@@ -21,25 +21,23 @@ const App = observer(function App() {
         setBookList={setBookList}
       />
 
-      {isLoading && (
+      {isLoading ? (
         <div className="loading">
           <p>🔍 Searching for books...</p>
         </div>
-      )}
-
-      {bookList && bookList.books.flat().length > 0 && (
+      ) : bookList && bookList.books.flat().length > 0 ? (
         <ul className="book-list">
           {bookList.books.flat().map((book) => (
             <BookCard key={book.id} book={book} />
           ))}
         </ul>
-      )}
-
-      {bookList && bookList.books.flat().length === 0 && !isLoading && (
-        <div className="empty-state">
-          <h3>No books found</h3>
-          <p>Try searching with different keywords</p>
-        </div>
+      ) : (
+        bookList && (
+          <div className="empty-state">
+            <h3>No books found</h3>
+            <p>Try searching with different keywords</p>
+          </div>
+        )
       )}
     </>
   );
